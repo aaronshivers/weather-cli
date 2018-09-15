@@ -16,7 +16,7 @@ const argv = yargs
 	.alias('help', 'h')
 	.argv
 
-geocode.geocodeAddress(argv.address, (error, results) => {
+geocode.geocodeAddress('924 N Park Ave, Independence, MO 64050', (error, results) => {
 	if (error) {
 		console.log(error)
 	} else {
