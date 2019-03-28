@@ -5,7 +5,7 @@ const { DARKSKY_API_KEY } = process.env
 const request = require('request'),
 			argv		= require('yargs')
 
-var getWeather = (latitude, longitude, callback) => {
+const getWeather = (latitude, longitude, callback) => {
 
 	request({
 		url: `https://api.darksky.net/forecast/${ DARKSKY_API_KEY }/${ latitude },${ longitude }`,
