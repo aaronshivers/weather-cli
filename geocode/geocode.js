@@ -1,12 +1,15 @@
+require('dotenv').config()
+
+const { GEOCODE_API_KEY } = process.env
+
 const argv 		= require('yargs'),
-			request = require('request'),
-			apikeys = require('/home/user/Desktop/apikeys/apikeys')
+			request = require('request')
 
 let geocodeAddress = (address, callback) => {
 	let addressEncoded = (encodeURIComponent(address))
 
 	request({
-		url: `https://maps.googleapis.com/maps/api/geocode/json?address=${addressEncoded}&key=${apikeys.geocodeApiKey}`,
+		url: `https://maps.googleapis.com/maps/api/geocode/json?address=${ addressEncoded }&key=${ GEOCODE_API_KEY }`,
 		json: true
 	}, (error, response, body) => {
 		if (error) {
