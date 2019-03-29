@@ -20,11 +20,27 @@ const argv = yargs
 	.alias('help', 'h')
 	.argv
 
-geocodeAddress(argv.address).then(location => {
-	if (!location) throw new Error()
-	return getWeather(location.latitude, location.longitude)
-}).then(weatherResults => {
-	if (!weatherResults) throw new Error()
-	console.log(location.address)
-	return console.log(JSON.stringify(weatherResults, undefined, 2))
-}).catch(err => console.log(err.message))
+const runApplication = async address => {
+
+	try {
+
+		// get location from provided address
+		const location = await geocodeAddress(address)
+
+		// throw error if address is not found
+		if (!location) throw Error()
+
+		// get weather for the location
+		const weather = await getWeather(location.latitude, location.longitude)
+
+		// log address and weather
+		console.log(location.address)
+		console.log(JSON.stringify(weather, undefined, 2))
+
+	} catch (error) {
+
+		console.log(error.message)
+	}
+}
+
+runApplication(argv.address)
