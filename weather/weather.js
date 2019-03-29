@@ -1,5 +1,3 @@
-require('dotenv').config()
-
 const rp = require('request-promise-native')
 const moment = require('moment')
 

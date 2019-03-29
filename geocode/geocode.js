@@ -1,5 +1,3 @@
-require('dotenv').config()
-
 const { GEOCODE_API_KEY } = process.env
 
 const rp = require('request-promise-native')
