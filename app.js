@@ -1,7 +1,11 @@
+require('dotenv').config()
+
 const yargs = require('yargs')
 
-const geocode = require('./geocode/geocode')
-const weather = require('./weather/weather')
+const { GEOCODE_API_KEY, DARKSKY_API_KEY } = process.env
+
+const geocodeAddress = require('./geocode/geocode')
+const getWeather = require('./weather/weather')
 
 const argv = yargs
 	.options({
@@ -16,19 +20,11 @@ const argv = yargs
 	.alias('help', 'h')
 	.argv
 
-geocode.geocodeAddress(argv.address, (error, results) => {
-	if (error) {
-		console.log(error)
-	} else {
-		console.log(results.address)
-		weather.getWeather(results.latitude, results.longitude, (error, weatherResults) => {
-			if (error) {
-				console.log(error)
-			} else {
-				console.log(JSON.stringify(weatherResults, undefined, 2))
-			}
-		})		
-	}
-})
-
-// lat, lng, callback
+geocodeAddress(argv.address).then(location => {
+	if (!location) throw new Error()
+	return getWeather(location.latitude, location.longitude)
+}).then(weatherResults => {
+	if (!weatherResults) throw new Error()
+	console.log(location.address)
+	return console.log(JSON.stringify(weatherResults, undefined, 2))
+}).catch(err => console.log(err.message))

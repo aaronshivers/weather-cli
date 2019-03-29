@@ -1,27 +1,33 @@
 require('dotenv').config()
 
+const rp = require('request-promise-native')
+
 const { DARKSKY_API_KEY } = process.env
 
-const request = require('request'),
-			argv		= require('yargs')
+module.exports = async (latitude, longitude) => {
 
-const getWeather = (latitude, longitude, callback) => {
+	try {
 
-	request({
-		url: `https://api.darksky.net/forecast/${ DARKSKY_API_KEY }/${ latitude },${ longitude }`,
-		json: true
-	}, (error, response, body) => {
-		if (!error && response.statusCode === 200) {
-			callback(undefined, {
-				temperature: `It is currently ${ body.currently.temperature } degrees.`,
-				feelsLike: `It feels like it's ${ body.currently.apparentTemperature } degrees.`,
-				currently: `It's currently ${ body.currently.summary }.`,
-				forecast: `Expect ${ body.daily.summary }`
-			})
-		} else {
-			callback('Unable to fetch weather.')
+		const options = {
+			url: `https://api.darksky.net/forecast/${ DARKSKY_API_KEY }/${ latitude },${ longitude }`,
+			json: true
 		}
-	})
-}
 
-module.exports.getWeather = getWeather
+		const res = await rp(options)
+
+    return weather = {
+      temperature:         Math.round(res.currently.temperature),
+      feelsLike:           Math.round(res.currently.apparentTemperature),
+      temperatureHigh:     Math.round(res.daily.data[0].temperatureHigh),
+      temperatureLow:      Math.round(res.daily.data[0].temperatureLow),
+      temperatureHighTime: res.daily.data[0].temperatureHighTime,
+      currently:           res.currently.summary,
+      today:               res.daily.data[0].summary,
+      tomorrow:            res.daily.data[1].summary,
+      forecast:            res.daily.summary
+		}
+
+	} catch (err) {
+		console.error('Unable to fetch weather.')
+	}
+}

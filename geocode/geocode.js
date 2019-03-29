@@ -2,30 +2,30 @@ require('dotenv').config()
 
 const { GEOCODE_API_KEY } = process.env
 
-const argv 		= require('yargs'),
-			request = require('request')
+const rp = require('request-promise-native')
 
-let geocodeAddress = (address, callback) => {
-	let addressEncoded = (encodeURIComponent(address))
+module.exports = async address => {
 
-	request({
-		url: `https://maps.googleapis.com/maps/api/geocode/json?address=${ addressEncoded }&key=${ GEOCODE_API_KEY }`,
-		json: true
-	}, (error, response, body) => {
-		if (error) {
-			callback('Unable to connect to Google servers.')
-		} else if (body.status === 'ZERO_RESULTS') {
-			callback('Unable to find that address.')
-		} else if (body.status === 'OK') {
-			callback(undefined, {
-				address: body.results[0].formatted_address,
-				latitude: body.results[0].geometry.location.lat,
-				longitude: body.results[0].geometry.location.lng
-			})
+	try {
+
+		const addressEncoded = (encodeURIComponent(address))
+
+		const options = {
+			url: `https://maps.googleapis.com/maps/api/geocode/json?address=${ addressEncoded }&key=${ GEOCODE_API_KEY }`,
+			json: true
 		}
-	})
+
+		const res = await rp(options)
+
+		if (res.status === 'ZERO_RESULTS') throw new Error('Address Not Found')
+
+		return location = {
+			address: res.results[0].formatted_address,
+			latitude: res.results[0].geometry.location.lat,
+			longitude: res.results[0].geometry.location.lng
+		}
+
+	} catch (error) {
+		console.error(error.message)
+	}
 }
-
-
-
-module.exports.geocodeAddress = geocodeAddress
